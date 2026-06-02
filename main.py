@@ -168,14 +168,6 @@ try:
 except:
     pass
 
-conn.execute("""
-UPDATE vault
-SET password='Password123!',
-    last_rotation='2026-06-01',
-    approval_required='Yes'
-WHERE password IS NULL
-""")
-
 # ── Session timeout ─────────────────────────────────────────────────────────
 
 @app.before_request
