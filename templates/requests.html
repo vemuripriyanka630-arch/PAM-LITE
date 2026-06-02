@@ -1,53 +1,233 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
-<title>PAM Lite - Access Requests</title>
-</head>
-<body>
-<h1>Access Requests</h1>
-<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+<title>PAM-LITE Enterprise Access Requests</title><style>
 
-<h2>Submit New Request</h2>
-<form method="POST" action="/requests/new">
-  Resource: <input type="text" name="resource" placeholder="e.g. Production DB" required>
-  &nbsp;
-  Reason: <input type="text" name="reason" placeholder="e.g. Debug outage" required>
-  &nbsp;
-  <button type="submit">Submit</button>
-</form>
+body{
+font-family:Arial,sans-serif;
+background:#f0f2f5;
+margin:0;
+padding:0;
+}
 
-<br>
-<h2>All Requests</h2>
-<table border="1" cellpadding="8">
-<tr>
-  <th>#</th>
-  <th>User</th>
-  <th>Resource</th>
-  <th>Reason</th>
-  <th>Status</th>
-  <th>Action</th>
-</tr>
-{% for req in requests %}
-<tr>
-  <td>{{ req.id }}</td>
-  <td>{{ req.user }}</td>
-  <td>{{ req.resource }}</td>
-  <td>{{ req.reason }}</td>
-  <td>{{ req.status }}</td>
-  <td>
-    {% if req.status == "pending" %}
-      <form method="POST" action="/requests/{{ req.id }}/approve" style="display:inline">
-        <button type="submit">Approve</button>
-      </form>
-      <form method="POST" action="/requests/{{ req.id }}/deny" style="display:inline">
-        <button type="submit">Deny</button>
-      </form>
-    {% else %}
-      —
-    {% endif %}
-  </td>
-</tr>
-{% endfor %}
-</table>
-</body>
+.topbar{
+background:linear-gradient(90deg,#1e3a5f,#2980b9);
+padding:15px;
+color:white;
+display:flex;
+justify-content:space-between;
+}
+
+.topbar a{
+color:#f1c40f;
+text-decoration:none;
+margin-left:15px;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+margin-bottom:20px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:20px;
+}
+
+.stat{
+padding:20px;
+color:white;
+border-radius:12px;
+text-align:center;
+}
+
+.blue{
+background:linear-gradient(135deg,#3498db,#2980b9);
+}
+
+.green{
+background:linear-gradient(135deg,#2ecc71,#27ae60);
+}
+
+.orange{
+background:linear-gradient(135deg,#f39c12,#e67e22);
+}
+
+.red{
+background:linear-gradient(135deg,#e74c3c,#c0392b);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1e3a5f;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.approve{
+background:#27ae60;
+color:white;
+}
+
+.deny{
+background:#e74c3c;
+color:white;
+}
+
+.submit{
+background:#2980b9;
+color:white;
+}
+
+.pending{
+color:#f39c12;
+font-weight:bold;
+}
+
+.approved{
+color:#27ae60;
+font-weight:bold;
+}
+
+.denied{
+color:#e74c3c;
+font-weight:bold;
+}
+
+</style></head><body><div class="topbar"><div>
+<h2>📋 Enterprise Access Requests</h2>
+</div><div>
+<a href="/dashboard">Dashboard</a>
+<a href="/logout">Logout</a>
+</div></div><div class="container"><div class="stats"><div class="stat blue">
+<h2>12</h2>
+<p>Total Requests</p>
+</div><div class="stat orange">
+<h2>4</h2>
+<p>Pending</p>
+</div><div class="stat green">
+<h2>6</h2>
+<p>Approved</p>
+</div><div class="stat red">
+<h2>2</h2>
+<p>Denied</p>
+</div></div><div class="card"><h3>Request New Privileged Access</h3><form method="POST" action="/requests/new"><label>Server / Resource</label>
+
+<input
+type="text"
+name="resource"
+placeholder="Windows-Prod-01"
+required>
+
+<label>Duration</label>
+
+<select><option>30 Minutes</option>
+<option>1 Hour</option>
+<option>2 Hours</option>
+<option>4 Hours</option>
+<option>8 Hours</option></select><label>Business Justification</label>
+
+<textarea
+name="reason"
+required>
+</textarea><label>Emergency Access</label>
+
+<select>
+<option>No</option>
+<option>Yes</option>
+</select><button
+class="submit"
+type="submit">
+
+Submit Request
+
+</button></form></div><div class="card"><h3>Access Request Queue</h3><table><tr><th>ID</th>
+<th>User</th>
+<th>Resource</th>
+<th>Reason</th>
+<th>Status</th>
+<th>Action</th></tr>{% for req in requests %}
+
+<tr><td>{{ req.id }}</td><td>{{ req.username }}</td><td>{{ req.resource }}</td><td>{{ req.reason }}</td><td>{% if req.status == "pending" %}
+<span class="pending">
+Pending
+</span>
+{% endif %}
+
+{% if req.status == "approved" %}
+<span class="approved">
+Approved
+</span>
+{% endif %}
+
+{% if req.status == "denied" %}
+<span class="denied">
+Denied
+</span>
+{% endif %}
+
+</td><td>{% if req.status == "pending" %}
+
+<form
+method="POST"
+action="/requests/{{ req.id }}/approve"
+style="display:inline;"><button
+class="approve"
+type="submit">
+
+Approve
+
+</button></form><form
+method="POST"
+action="/requests/{{ req.id }}/deny"
+style="display:inline;"><button
+class="deny"
+type="submit">
+
+Deny
+
+</button></form>{% else %}
+
+Completed
+
+{% endif %}
+
+</td></tr>{% endfor %}
+
+</table></div></div></body>
 </html>
