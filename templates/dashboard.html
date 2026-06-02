@@ -2,137 +2,369 @@
 <html>
 <head>
 <title>PAM Lite - Dashboard</title>
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-  .topbar {
-    background: #1e3a5f;
-    color: white;
-    padding: 14px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .topbar h1 { font-size: 22px; letter-spacing: 1px; }
-  .topbar span { font-size: 14px; opacity: 0.85; }
-  .topbar a { color: #f0c040; text-decoration: none; font-size: 14px; margin-left: 16px; }
-  .topbar a:hover { text-decoration: underline; }
+body{
+    font-family:Arial,sans-serif;
+    background:#f0f2f5;
+    min-height:100vh;
+}
 
-  .container { max-width: 900px; margin: 36px auto; padding: 0 20px; }
+/* Top Bar */
 
-  .welcome {
-    background: linear-gradient(135deg, #1e3a5f, #2e6da4);
-    color: white;
-    border-radius: 12px;
-    padding: 24px 28px;
-    margin-bottom: 28px;
-  }
-  .welcome h2 { font-size: 20px; margin-bottom: 6px; }
-  .welcome p { opacity: 0.85; font-size: 14px; }
+.topbar{
+    background:linear-gradient(90deg,#1e3a5f,#2980b9);
+    color:white;
+    padding:14px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.topbar h1{
+    font-size:22px;
+}
 
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    transition: transform 0.15s, box-shadow 0.15s;
-    border-left: 6px solid;
-  }
-  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.topbar a{
+    color:#f1c40f;
+    text-decoration:none;
+    margin-left:15px;
+}
 
-  .card-vault     { border-color: #e67e22; }
-  .card-requests  { border-color: #27ae60; }
-  .card-audit     { border-color: #8e44ad; }
-  .card-users     { border-color: #c0392b; }
-  .card-profile   { border-color: #2980b9; }
+/* Container */
 
-  .icon {
-    width: 52px; height: 52px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; flex-shrink: 0;
-  }
-  .icon-vault    { background: #fdebd0; }
-  .icon-requests { background: #d5f5e3; }
-  .icon-audit    { background: #e8daef; }
-  .icon-users    { background: #fadbd8; }
-  .icon-profile  { background: #d6eaf8; }
+.container{
+    max-width:1200px;
+    margin:20px auto;
+    padding:0 20px;
+}
 
-  .card-text h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 4px; }
-  .card-text p  { font-size: 13px; color: #666; }
+/* Notification */
 
-  .footer { text-align: center; margin-top: 36px; color: #999; font-size: 12px; }
+.notification{
+    background:#fff3cd;
+    color:#856404;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-weight:bold;
+}
+
+/* Welcome */
+
+.welcome{
+    background:linear-gradient(135deg,#1e3a5f,#2e86de);
+    color:white;
+    border-radius:12px;
+    padding:24px;
+    margin-bottom:20px;
+}
+
+/* Statistics */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat-card{
+    padding:25px;
+    border-radius:15px;
+    color:white;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+.stat-card h2{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.blue{
+    background:linear-gradient(135deg,#3498db,#2980b9);
+}
+
+.green{
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+}
+
+.orange{
+    background:linear-gradient(135deg,#f39c12,#e67e22);
+}
+
+.red{
+    background:linear-gradient(135deg,#e74c3c,#c0392b);
+}
+
+/* Main Cards */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:24px;
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+    transition:0.2s;
+    border-left:6px solid;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.card-vault{border-color:#e67e22;}
+.card-requests{border-color:#27ae60;}
+.card-audit{border-color:#8e44ad;}
+.card-users{border-color:#c0392b;}
+.card-profile{border-color:#2980b9;}
+
+.icon{
+    width:52px;
+    height:52px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+}
+
+.icon-vault{background:#fdebd0;}
+.icon-requests{background:#d5f5e3;}
+.icon-audit{background:#e8daef;}
+.icon-users{background:#fadbd8;}
+.icon-profile{background:#d6eaf8;}
+
+/* Profile */
+
+.profile-box{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    margin-top:25px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+}
+
+/* Servers */
+
+.server-box{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    margin-top:25px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+}
+
+.server-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.server-table th{
+    background:#1e3a5f;
+    color:white;
+    padding:10px;
+}
+
+.server-table td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+.online{
+    color:green;
+    font-weight:bold;
+}
+
+.offline{
+    color:red;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    margin-top:30px;
+    color:#777;
+    padding-bottom:20px;
+}
 </style>
+
 </head>
 <body>
 
 <div class="topbar">
-  <h1>&#128274; PAM-LITE</h1>
-  <div>
-    <span>Signed in as <strong>{{ username }}</strong></span>
-    <a href="/profile">Profile</a>
-    <a href="/logout">Logout</a>
-  </div>
+    <h1>🔐 PAM-LITE</h1>
+
+    <div>
+        Signed in as <strong>{{ username }}</strong>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>
 </div>
 
 <div class="container">
-  <div class="welcome">
-    <h2>Welcome back, {{ username }}!</h2>
-    <p>Privileged Access Management &mdash; manage credentials, access, and audit trails from one place.</p>
-  </div>
 
-  <div class="grid">
-    <a href="/vault" class="card card-vault">
-      <div class="icon icon-vault">&#128196;</div>
-      <div class="card-text">
-        <h3>Password Vault</h3>
-        <p>View and manage stored credentials</p>
-      </div>
-    </a>
+<div class="notification">
+<marquee>
+🔔 Password Rotation Completed |
+🔔 3 Pending Access Requests |
+🔔 Linux-App-01 Added Successfully |
+🔔 Audit Review Due This Week |
+🔔 Welcome {{ username }}
+</marquee>
+</div>
 
-    <a href="/requests" class="card card-requests">
-      <div class="icon icon-requests">&#9989;</div>
-      <div class="card-text">
-        <h3>Access Requests</h3>
-        <p>Submit or review privilege requests</p>
-      </div>
-    </a>
+<div class="welcome">
+<h2>Welcome back, {{ username }}!</h2>
+<p>Privileged Access Management Dashboard</p>
+</div>
 
-    <a href="/audit" class="card card-audit">
-      <div class="icon icon-audit">&#128202;</div>
-      <div class="card-text">
-        <h3>Audit Logs</h3>
-        <p>Track all system activity and events</p>
-      </div>
-    </a>
+<div class="stats">
 
-    {% if username == "admin" %}
-    <a href="/users" class="card card-users">
-      <div class="icon icon-users">&#128100;</div>
-      <div class="card-text">
-        <h3>User Management</h3>
-        <p>Add, remove, and manage accounts</p>
-      </div>
-    </a>
-    {% else %}
-    <a href="/profile" class="card card-profile">
-      <div class="icon icon-profile">&#128101;</div>
-      <div class="card-text">
-        <h3>My Profile</h3>
-        <p>Update your password and settings</p>
-      </div>
-    </a>
-    {% endif %}
-  </div>
+<div class="stat-card blue">
+<h2>12</h2>
+<p>Managed Servers</p>
+</div>
 
-  <div class="footer">PAM-LITE &bull; Session active &bull; Auto-logout after 15 min inactivity</div>
+<div class="stat-card green">
+<h2>8</h2>
+<p>Active Sessions</p>
+</div>
+
+<div class="stat-card orange">
+<h2>3</h2>
+<p>Pending Requests</p>
+</div>
+
+<div class="stat-card red">
+<h2>1</h2>
+<p>Security Alerts</p>
+</div>
+
+</div>
+
+<div class="grid">
+
+<a href="/vault" class="card card-vault">
+<div class="icon icon-vault">🔑</div>
+<div>
+<h3>Password Vault</h3>
+<p>Manage credentials</p>
+</div>
+</a>
+
+<a href="/requests" class="card card-requests">
+<div class="icon icon-requests">✅</div>
+<div>
+<h3>Access Requests</h3>
+<p>Review requests</p>
+</div>
+</a>
+
+<a href="/audit" class="card card-audit">
+<div class="icon icon-audit">📊</div>
+<div>
+<h3>Audit Logs</h3>
+<p>Review activities</p>
+</div>
+</a>
+
+{% if username == "admin" %}
+<a href="/users" class="card card-users">
+<div class="icon icon-users">👥</div>
+<div>
+<h3>User Management</h3>
+<p>Manage users</p>
+</div>
+</a>
+{% else %}
+<a href="/profile" class="card card-profile">
+<div class="icon icon-profile">👤</div>
+<div>
+<h3>My Profile</h3>
+<p>View profile</p>
+</div>
+</a>
+{% endif %}
+
+</div>
+
+<div class="profile-box">
+<h3>👤 My Details</h3>
+<br>
+<p><b>User:</b> {{ username }}</p>
+<p><b>Role:</b> {% if username == "admin" %}Administrator{% else %}User{% endif %}</p>
+<p><b>Status:</b> Active</p>
+<p><b>Session:</b> Connected</p>
+</div>
+
+<div class="server-box">
+
+<h3>🖥 Managed Servers</h3>
+
+<table class="server-table">
+
+<tr>
+<th>Server</th>
+<th>IP Address</th>
+<th>Status</th>
+<th>Protocol</th>
+</tr>
+
+<tr>
+<td>Windows-Prod-01</td>
+<td>10.0.1.10</td>
+<td class="online">Online</td>
+<td>RDP</td>
+</tr>
+
+<tr>
+<td>Linux-App-01</td>
+<td>10.0.1.20</td>
+<td class="online">Online</td>
+<td>SSH</td>
+</tr>
+
+<tr>
+<td>Database-01</td>
+<td>10.0.1.30</td>
+<td class="offline">Offline</td>
+<td>SSH</td>
+</tr>
+
+<tr>
+<td>DomainController</td>
+<td>10.0.1.5</td>
+<td class="online">Online</td>
+<td>RDP</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="footer">
+PAM-LITE • Session Active • Auto Logout After 15 Minutes
+</div>
+
 </div>
 
 </body>
