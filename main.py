@@ -210,6 +210,37 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    with get_db() as conn:
+
+        server_count = conn.execute(
+            "SELECT COUNT(*) FROM servers"
+        ).fetchone()[0]
+
+        vault_count = conn.execute(
+            "SELECT COUNT(*) FROM vault"
+        ).fetchone()[0]
+
+        pending_count = conn.execute(
+            "SELECT COUNT(*) FROM requests WHERE status='pending'"
+        ).fetchone()[0]
+
+        session_count = conn.execute(
+            "SELECT COUNT(*) FROM sessions"
+        ).fetchone()[0]
+
+    return render_template(
+        "dashboard.html",
+        username=session["user"],
+        role=session["role"],
+        server_count=server_count,
+        vault_count=vault_count,
+        pending_count=pending_count,
+        session_count=session_count
+    )
     username = request.args.get("username", "").strip()
     password = request.args.get("password", "")
     if username and password:
