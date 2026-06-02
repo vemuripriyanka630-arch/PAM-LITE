@@ -1,27 +1,176 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
-<title>PAM Lite - Password Vault</title>
-</head>
-<body>
-<h1>Password Vault</h1>
-<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+<title>PAM-LITE Enterprise Vault</title><style>
 
-<table border="1" cellpadding="8">
-<tr>
-  <th>Name</th>
-  <th>Username</th>
-  <th>URL</th>
-  <th>Password</th>
-</tr>
-{% for entry in passwords %}
-<tr>
-  <td>{{ entry.name }}</td>
-  <td>{{ entry.username }}</td>
-  <td>{{ entry.url }}</td>
-  <td>••••••••</td>
-</tr>
-{% endfor %}
-</table>
-</body>
+body{
+font-family:Arial,sans-serif;
+background:#f0f2f5;
+margin:0;
+padding:0;
+}
+
+.topbar{
+background:linear-gradient(90deg,#1e3a5f,#2980b9);
+padding:15px;
+color:white;
+display:flex;
+justify-content:space-between;
+}
+
+.topbar a{
+color:#f1c40f;
+text-decoration:none;
+margin-left:15px;
+}
+
+.container{
+padding:20px;
+max-width:1400px;
+margin:auto;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+padding:20px;
+border-radius:12px;
+color:white;
+text-align:center;
+}
+
+.blue{
+background:linear-gradient(135deg,#3498db,#2980b9);
+}
+
+.green{
+background:linear-gradient(135deg,#2ecc71,#27ae60);
+}
+
+.orange{
+background:linear-gradient(135deg,#f39c12,#e67e22);
+}
+
+.red{
+background:linear-gradient(135deg,#e74c3c,#c0392b);
+}
+
+.table-box{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1e3a5f;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.btn{
+padding:8px 12px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-size:12px;
+}
+
+.view{
+background:#3498db;
+color:white;
+}
+
+.checkout{
+background:#27ae60;
+color:white;
+}
+
+.rotate{
+background:#f39c12;
+color:white;
+}
+
+.history{
+background:#8e44ad;
+color:white;
+}
+
+.badge{
+padding:5px 10px;
+border-radius:10px;
+background:#d1fae5;
+color:#065f46;
+font-size:12px;
+}
+
+</style></head><body><div class="topbar"><div>
+<h2>🔐 Enterprise Password Vault</h2>
+</div><div>
+<a href="/dashboard">Dashboard</a>
+<a href="/logout">Logout</a>
+</div></div><div class="container"><div class="stats"><div class="card blue">
+<h2>{{ passwords|length }}</h2>
+<p>Vault Accounts</p>
+</div><div class="card green">
+<h2>12</h2>
+<p>Checked Out</p>
+</div><div class="card orange">
+<h2>4</h2>
+<p>Pending Approval</p>
+</div><div class="card red">
+<h2>18</h2>
+<p>Password Rotations</p>
+</div></div><div class="table-box"><h2>Password Vault Accounts</h2><table><tr>
+<th>Name</th>
+<th>Username</th>
+<th>URL</th>
+<th>Status</th>
+<th>Last Rotation</th>
+<th>Actions</th>
+</tr>{% for entry in passwords %}
+
+<tr><td>{{ entry.name }}</td><td>{{ entry.username }}</td><td>{{ entry.url }}</td><td>
+<span class="badge">
+Protected
+</span>
+</td><td>
+2026-06-01
+</td><td><button class="btn view">
+View
+</button><button class="btn checkout">
+Checkout
+</button><button class="btn rotate">
+Rotate
+</button><button class="btn history">
+History
+</button></td></tr>{% endfor %}
+
+</table></div><br><div class="table-box"><h2>Password Rotation History</h2><table><tr>
+<th>Vault</th>
+<th>Changed By</th>
+<th>Date</th>
+</tr><tr>
+<td>Production DB</td>
+<td>admin</td>
+<td>2026-06-01</td>
+</tr><tr>
+<td>AWS Root Account</td>
+<td>admin</td>
+<td>2026-05-30</td>
+</tr></table></div></div></body>
 </html>
