@@ -1,1 +1,117 @@
-<h2>Server Access Management</h2>
+<!DOCTYPE html><html>
+<head>
+<title>PAM-LITE Server Access</title><style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f0f2f5;
+margin:0;
+}
+
+.topbar{
+background:linear-gradient(90deg,#1e3a5f,#2980b9);
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+}
+
+.topbar a{
+color:#f1c40f;
+text-decoration:none;
+margin-left:15px;
+}
+
+.container{
+padding:20px;
+max-width:1400px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1e3a5f;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.online{
+color:green;
+font-weight:bold;
+}
+
+.offline{
+color:red;
+font-weight:bold;
+}
+
+.btn{
+padding:8px 12px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+color:white;
+}
+
+.request{
+background:#2980b9;
+}
+
+.connect{
+background:#27ae60;
+}
+
+.waiting{
+background:#f39c12;
+}
+
+</style></head><body><div class="topbar"><div>
+<h2>🖥 Server Access Management</h2>
+</div><div>
+<a href="/dashboard">Dashboard</a>
+<a href="/logout">Logout</a>
+</div></div><div class="container"><div class="card"><h3>Managed Servers</h3><table><tr>
+<th>Server</th>
+<th>IP Address</th>
+<th>Platform</th>
+<th>Status</th>
+<th>Protocol</th>
+<th>Action</th>
+</tr>{% for server in servers %}
+
+<tr><td>{{ server.server_name }}</td><td>{{ server.ip_address }}</td><td>{{ server.platform }}</td><td>{% if server.status == "Online" %}
+<span class="online">Online</span>
+{% else %}
+<span class="offline">Offline</span>
+{% endif %}
+
+</td><td>{% if server.platform == "Windows" %}
+RDP
+{% else %}
+SSH
+{% endif %}
+
+</td><td><button class="btn request">
+Request Access
+</button><button class="btn connect">
+Connect
+</button></td></tr>{% endfor %}
+
+</table></div></div></body>
+</html>
