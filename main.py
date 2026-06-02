@@ -233,7 +233,27 @@ def vault():
     with get_db() as conn:
         passwords = conn.execute("SELECT * FROM vault").fetchall()
     return render_template("vault.html", username=session["user"], passwords=passwords)
+try:
+    conn.execute("ALTER TABLE vault ADD COLUMN password TEXT")
+except:
+    pass
 
+try:
+    conn.execute("ALTER TABLE vault ADD COLUMN last_rotation TEXT")
+except:
+    pass
+
+try:
+    conn.execute("ALTER TABLE vault ADD COLUMN approval_required TEXT")
+except:
+    pass
+conn.execute("""
+UPDATE vault
+SET password='Password123!',
+    last_rotation='2026-06-01',
+    approval_required='Yes'
+WHERE password IS NULL
+""")
 
 # ── Requests ────────────────────────────────────────────────────────────────
 
@@ -285,7 +305,61 @@ def deny_request(req_id):
     if row:
         log_audit(session["user"], "DENY_REQUEST", f"{row['resource']} (for {row['username']})")
     return redirect(url_for("access_requests"))
+    
+@app.route("/vault/<int:id>/rotate", methods=["POST"])
+def rotate_password(id):
 
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    new_password = "NewPassword123!"
+
+    with get_db() as conn:
+        conn.execute(
+            """
+            UPDATE vault
+            SET password=?,
+                last_rotation=?
+            WHERE id=?
+            """,
+            (
+                new_password,
+                datetime.utcnow().strftime("%Y-%m-%d"),
+                id
+            )
+        )
+
+    log_audit(
+        session["user"],
+        "PASSWORD_ROTATION",
+        f"Vault {id}"
+    )
+
+    return redirect("/vault")
+
+@app.route("/vault/<int:id>/checkout")
+def checkout_password(id):
+
+    log_audit(
+        session["user"],
+        "PASSWORD_CHECKOUT",
+        f"Vault {id}"
+    )
+
+    return redirect("/vault")
+
+
+@app.route("/vault/<int:id>/rotate",
+           methods=["POST"])
+def rotate_password(id):
+
+    log_audit(
+        session["user"],
+        "PASSWORD_ROTATION",
+        f"Vault {id}"
+    )
+
+    return redirect("/vault")
 
 # ── Audit ───────────────────────────────────────────────────────────────────
 
