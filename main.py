@@ -23,6 +23,10 @@ def hash_pw(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
+def is_admin():
+    return session.get("role") == "admin"
+
+
 def log_audit(user, action, resource, status="success"):
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     with get_db() as conn:
@@ -38,7 +42,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS users (
                 id       INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                role     TEXT NOT NULL DEFAULT 'user'
             );
             CREATE TABLE IF NOT EXISTS requests (
                 id       INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,9 +68,25 @@ def init_db():
                 status   TEXT NOT NULL DEFAULT 'success'
             );
         """)
-        if not conn.execute("SELECT 1 FROM users").fetchone():
-            for u, p in [("admin", "admin123"), ("alice", "alice123"), ("bob", "bob123")]:
-                conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (u, hash_pw(p)))
+        # Migrate existing DBs that don't have the role column yet
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'")
+        except Exception:
+            pass
+        # Ensure admin user has admin role
+        conn.execute("UPDATE users SET role='admin' WHERE username='admin'")
+
+        if not conn.execute("SELECT 1 FROM users WHERE username='admin'").fetchone():
+            conn.execute(
+                "INSERT INTO users (username, password, role) VALUES (?,?,?)",
+                ("admin", hash_pw("admin123"), "admin")
+            )
+        for u, p in [("alice", "alice123"), ("bob", "bob123")]:
+            if not conn.execute("SELECT 1 FROM users WHERE username=?", (u,)).fetchone():
+                conn.execute(
+                    "INSERT INTO users (username, password, role) VALUES (?,?,?)",
+                    (u, hash_pw(p), "user")
+                )
         if not conn.execute("SELECT 1 FROM vault").fetchone():
             conn.executemany("INSERT INTO vault (name, username, url) VALUES (?, ?, ?)", [
                 ("Production DB",    "db_admin",    "postgres://prod.internal"),
@@ -117,6 +138,7 @@ def login():
             ).fetchone()
         if row:
             session["user"] = username
+            session["role"] = row["role"]
             log_audit(username, "LOGIN", "System")
             return redirect(url_for("dashboard"))
         log_audit(username or "unknown", "LOGIN_FAILED", "System", status="failed")
@@ -137,12 +159,13 @@ def dashboard():
             ).fetchone()
         if row:
             session["user"] = username
+            session["role"] = row["role"]
             log_audit(username, "LOGIN", "System")
         else:
             log_audit(username or "unknown", "LOGIN_FAILED", "System", status="failed")
     if "user" not in session:
         return redirect(url_for("login"))
-    return render_template("dashboard.html", username=session["user"])
+    return render_template("dashboard.html", username=session["user"], role=session.get("role", "user"))
 
 
 @app.route("/logout")
@@ -173,7 +196,8 @@ def access_requests():
         return redirect(url_for("login"))
     with get_db() as conn:
         rows = conn.execute("SELECT * FROM requests ORDER BY id DESC").fetchall()
-    return render_template("requests.html", username=session["user"], requests=rows)
+    return render_template("requests.html", username=session["user"],
+                           role=session.get("role", "user"), requests=rows)
 
 
 @app.route("/requests/new", methods=["POST"])
@@ -194,8 +218,8 @@ def new_request():
 
 @app.route("/requests/<int:req_id>/approve", methods=["POST"])
 def approve_request(req_id):
-    if "user" not in session:
-        return redirect(url_for("login"))
+    if "user" not in session or not is_admin():
+        return redirect(url_for("dashboard"))
     with get_db() as conn:
         row = conn.execute("SELECT resource, username FROM requests WHERE id=?", (req_id,)).fetchone()
         conn.execute("UPDATE requests SET status='approved' WHERE id=?", (req_id,))
@@ -206,8 +230,8 @@ def approve_request(req_id):
 
 @app.route("/requests/<int:req_id>/deny", methods=["POST"])
 def deny_request(req_id):
-    if "user" not in session:
-        return redirect(url_for("login"))
+    if "user" not in session or not is_admin():
+        return redirect(url_for("dashboard"))
     with get_db() as conn:
         row = conn.execute("SELECT resource, username FROM requests WHERE id=?", (req_id,)).fetchone()
         conn.execute("UPDATE requests SET status='denied' WHERE id=?", (req_id,))
@@ -233,44 +257,70 @@ def audit_logs():
 
 @app.route("/users")
 def users():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    if session["user"] != "admin":
+    if "user" not in session or not is_admin():
         return redirect(url_for("dashboard"))
     with get_db() as conn:
-        all_users = [row["username"] for row in conn.execute("SELECT username FROM users").fetchall()]
+        all_users = conn.execute("SELECT username, role FROM users ORDER BY username").fetchall()
     return render_template("users.html", username=session["user"], users=all_users)
 
 
 @app.route("/users/new", methods=["POST"])
 def new_user():
-    if "user" not in session or session["user"] != "admin":
-        return redirect(url_for("login"))
+    if "user" not in session or not is_admin():
+        return redirect(url_for("dashboard"))
     uname = request.form.get("username", "").strip()
     pw    = request.form.get("password", "").strip()
+    role  = request.form.get("role", "user").strip()
+    if role not in ("admin", "user"):
+        role = "user"
     def reload(error=None, message=None):
         with get_db() as conn:
-            all_users = [r["username"] for r in conn.execute("SELECT username FROM users").fetchall()]
-        return render_template("users.html", username=session["user"], users=all_users, error=error, message=message)
+            all_users = conn.execute("SELECT username, role FROM users ORDER BY username").fetchall()
+        return render_template("users.html", username=session["user"], users=all_users,
+                               error=error, message=message)
     if not uname or not pw:
         return reload(error="Username and password are required.")
     try:
         with get_db() as conn:
-            conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (uname, hash_pw(pw)))
-        log_audit(session["user"], "CREATE_USER", uname)
-        return reload(message=f"User '{uname}' added.")
+            conn.execute(
+                "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+                (uname, hash_pw(pw), role)
+            )
+        log_audit(session["user"], "CREATE_USER", f"{uname} (role={role})")
+        return reload(message=f"User '{uname}' added with role '{role}'.")
     except sqlite3.IntegrityError:
         return reload(error=f"User '{uname}' already exists.")
 
 
-@app.route("/users/<uname>/delete", methods=["POST"])
-def delete_user(uname):
-    if "user" not in session or session["user"] != "admin":
-        return redirect(url_for("login"))
+@app.route("/users/<uname>/role", methods=["POST"])
+def change_role(uname):
+    if "user" not in session or not is_admin():
+        return redirect(url_for("dashboard"))
+    new_role = request.form.get("role", "user").strip()
+    if new_role not in ("admin", "user"):
+        new_role = "user"
     def reload(error=None, message=None):
         with get_db() as conn:
-            all_users = [r["username"] for r in conn.execute("SELECT username FROM users").fetchall()]
-        return render_template("users.html", username=session["user"], users=all_users, error=error, message=message)
+            all_users = conn.execute("SELECT username, role FROM users ORDER BY username").fetchall()
+        return render_template("users.html", username=session["user"], users=all_users,
+                               error=error, message=message)
+    if uname == session["user"]:
+        return reload(error="You cannot change your own role.")
+    with get_db() as conn:
+        conn.execute("UPDATE users SET role=? WHERE username=?", (new_role, uname))
+    log_audit(session["user"], "CHANGE_ROLE", f"{uname} → {new_role}")
+    return reload(message=f"Role for '{uname}' changed to '{new_role}'.")
+
+
+@app.route("/users/<uname>/delete", methods=["POST"])
+def delete_user(uname):
+    if "user" not in session or not is_admin():
+        return redirect(url_for("dashboard"))
+    def reload(error=None, message=None):
+        with get_db() as conn:
+            all_users = conn.execute("SELECT username, role FROM users ORDER BY username").fetchall()
+        return render_template("users.html", username=session["user"], users=all_users,
+                               error=error, message=message)
     if uname == session["user"]:
         return reload(error="You cannot delete your own account.")
     with get_db() as conn:
@@ -285,7 +335,8 @@ def delete_user(uname):
 def profile():
     if "user" not in session:
         return redirect(url_for("login"))
-    return render_template("profile.html", username=session["user"])
+    return render_template("profile.html", username=session["user"],
+                           role=session.get("role", "user"))
 
 
 @app.route("/profile/password", methods=["POST"])
@@ -301,17 +352,26 @@ def change_password():
                            (uname, hash_pw(current))).fetchone()
     if not row:
         log_audit(uname, "PASSWORD_CHANGE", "System", status="failed")
-        return render_template("profile.html", username=uname, error="Current password is incorrect.")
+        return render_template("profile.html", username=uname,
+                               role=session.get("role", "user"),
+                               error="Current password is incorrect.")
     if not new_pw:
-        return render_template("profile.html", username=uname, error="New password cannot be empty.")
+        return render_template("profile.html", username=uname,
+                               role=session.get("role", "user"),
+                               error="New password cannot be empty.")
     if new_pw != confirm:
-        return render_template("profile.html", username=uname, error="New passwords do not match.")
+        return render_template("profile.html", username=uname,
+                               role=session.get("role", "user"),
+                               error="New passwords do not match.")
     with get_db() as conn:
         conn.execute("UPDATE users SET password=? WHERE username=?", (hash_pw(new_pw), uname))
     log_audit(uname, "PASSWORD_CHANGE", "System")
-    return render_template("profile.html", username=uname, message="Password updated successfully.")
+    return render_template("profile.html", username=uname,
+                           role=session.get("role", "user"),
+                           message="Password updated successfully.")
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+    
