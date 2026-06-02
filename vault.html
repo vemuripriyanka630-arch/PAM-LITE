@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PAM Lite - Password Vault</title>
+</head>
+<body>
+<h1>Password Vault</h1>
+<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+
+<table border="1" cellpadding="8">
+<tr>
+  <th>Name</th>
+  <th>Username</th>
+  <th>URL</th>
+  <th>Password</th>
+</tr>
+{% for entry in passwords %}
+<tr>
+  <td>{{ entry.name }}</td>
+  <td>{{ entry.username }}</td>
+  <td>{{ entry.url }}</td>
+  <td>••••••••</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PAM Lite - Users</title>
+</head>
+<body>
+<h1>User Management</h1>
+<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+{% if message %}
+<p style="color:green">{{ message }}</p>
+{% endif %}
+
+<h2>Add New User</h2>
+<form method="POST" action="/users/new">
+  Username: <input type="text" name="username" placeholder="username" required>
+  &nbsp;
+  Password: <input type="password" name="password" placeholder="password" required>
+  &nbsp;
+  <button type="submit">Add User</button>
+</form>
+
+<br>
+<h2>All Users</h2>
+<table border="1" cellpadding="8">
+<tr>
+  <th>Username</th>
+  <th>Action</th>
+</tr>
+{% for user in users %}
+<tr>
+  <td>{{ user }}</td>
+  <td>
+    {% if user != username %}
+    <form method="POST" action="/users/{{ user }}/delete" style="display:inline"
+          onsubmit="return confirm('Delete user {{ user }}?')">
+      <button type="submit">Delete</button>
+    </form>
+    {% else %}
+      (you)
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
