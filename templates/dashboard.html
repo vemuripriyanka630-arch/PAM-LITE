@@ -1,360 +1,390 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>PAM Lite - Dashboard</title>
+<title>PAM-LITE Enterprise Dashboard</title>
 
 <style>
+
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+box-sizing:border-box;
+margin:0;
+padding:0;
 }
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f0f2f5;
-    min-height:100vh;
+font-family:Arial,sans-serif;
+background:#f0f2f5;
+min-height:100vh;
 }
 
-/* Top Bar */
-
 .topbar{
-    background:linear-gradient(90deg,#1e3a5f,#2980b9);
-    color:white;
-    padding:14px 28px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+background:linear-gradient(90deg,#1e3a5f,#2980b9);
+color:white;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .topbar h1{
-    font-size:22px;
+font-size:24px;
 }
 
 .topbar a{
-    color:#f1c40f;
-    text-decoration:none;
-    margin-left:15px;
+color:#f1c40f;
+text-decoration:none;
+margin-left:15px;
+font-weight:bold;
 }
-
-/* Container */
 
 .container{
-    max-width:1200px;
-    margin:20px auto;
-    padding:0 20px;
+max-width:1400px;
+margin:20px auto;
+padding:20px;
 }
-
-/* Notification */
 
 .notification{
-    background:#fff3cd;
-    color:#856404;
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:20px;
-    font-weight:bold;
+background:#fff3cd;
+color:#856404;
+padding:12px;
+border-radius:10px;
+margin-bottom:20px;
+font-weight:bold;
 }
-
-/* Welcome */
 
 .welcome{
-    background:linear-gradient(135deg,#1e3a5f,#2e86de);
-    color:white;
-    border-radius:12px;
-    padding:24px;
-    margin-bottom:20px;
+background:linear-gradient(135deg,#1e3a5f,#3498db);
+color:white;
+padding:25px;
+border-radius:12px;
+margin-bottom:20px;
 }
 
-/* Statistics */
-
 .stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    margin-bottom:25px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:25px;
 }
 
 .stat-card{
-    padding:25px;
-    border-radius:15px;
-    color:white;
-    text-align:center;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+padding:20px;
+border-radius:12px;
+color:white;
+text-align:center;
+box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
 
 .stat-card h2{
-    font-size:34px;
-    margin-bottom:10px;
+font-size:36px;
+margin-bottom:10px;
 }
 
 .blue{
-    background:linear-gradient(135deg,#3498db,#2980b9);
+background:linear-gradient(135deg,#3498db,#2980b9);
 }
 
 .green{
-    background:linear-gradient(135deg,#2ecc71,#27ae60);
+background:linear-gradient(135deg,#2ecc71,#27ae60);
 }
 
 .orange{
-    background:linear-gradient(135deg,#f39c12,#e67e22);
+background:linear-gradient(135deg,#f39c12,#e67e22);
 }
 
 .red{
-    background:linear-gradient(135deg,#e74c3c,#c0392b);
+background:linear-gradient(135deg,#e74c3c,#c0392b);
 }
 
-/* Main Cards */
-
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:18px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:18px;
+margin-bottom:25px;
 }
 
 .card{
-    background:white;
-    border-radius:12px;
-    padding:24px;
-    text-decoration:none;
-    color:inherit;
-    display:flex;
-    align-items:center;
-    gap:18px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.07);
-    transition:0.2s;
-    border-left:6px solid;
+background:white;
+border-radius:12px;
+padding:22px;
+display:flex;
+align-items:center;
+gap:15px;
+text-decoration:none;
+color:black;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+transition:.2s;
 }
 
 .card:hover{
-    transform:translateY(-3px);
+transform:translateY(-3px);
 }
-
-.card-vault{border-color:#e67e22;}
-.card-requests{border-color:#27ae60;}
-.card-audit{border-color:#8e44ad;}
-.card-users{border-color:#c0392b;}
-.card-profile{border-color:#2980b9;}
 
 .icon{
-    width:52px;
-    height:52px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:24px;
+font-size:28px;
+width:55px;
+height:55px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#ecf0f1;
+border-radius:10px;
 }
 
-.icon-vault{background:#fdebd0;}
-.icon-requests{background:#d5f5e3;}
-.icon-audit{background:#e8daef;}
-.icon-users{background:#fadbd8;}
-.icon-profile{background:#d6eaf8;}
-
-/* Profile */
+.card-text h3{
+margin-bottom:5px;
+}
 
 .profile-box{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-top:25px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+background:white;
+padding:20px;
+border-radius:12px;
+margin-top:20px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-/* Servers */
-
-.server-box{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-top:25px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+.profile-box h3{
+margin-bottom:15px;
+color:#1e3a5f;
 }
 
-.server-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
 }
 
-.server-table th{
-    background:#1e3a5f;
-    color:white;
-    padding:10px;
+th{
+background:#1e3a5f;
+color:white;
+padding:10px;
 }
 
-.server-table td{
-    padding:10px;
-    border-bottom:1px solid #ddd;
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
 }
 
 .online{
-    color:green;
-    font-weight:bold;
+color:green;
+font-weight:bold;
 }
 
 .offline{
-    color:red;
-    font-weight:bold;
+color:red;
+font-weight:bold;
 }
 
 .footer{
-    text-align:center;
-    margin-top:30px;
-    color:#777;
-    padding-bottom:20px;
+text-align:center;
+margin-top:30px;
+color:#777;
 }
-</style>
 
+</style>
 </head>
+
 <body>
 
 <div class="topbar">
-    <h1>🔐 PAM-LITE</h1>
 
-    <div>
-        Signed in as <strong>{{ username }}</strong>
-        <a href="/profile">Profile</a>
-        <a href="/logout">Logout</a>
-    </div>
+<h1>🔐 PAM-LITE Enterprise</h1>
+
+<div>
+<strong>{{ username }}</strong>
+<a href="/profile">Profile</a>
+<a href="/logout">Logout</a>
+</div>
+
 </div>
 
 <div class="container">
 
 <div class="notification">
+
 <marquee>
+
 🔔 Password Rotation Completed |
-🔔 3 Pending Access Requests |
-🔔 Linux-App-01 Added Successfully |
-🔔 Audit Review Due This Week |
+🔔 3 Pending Requests |
+🔔 New Linux Server Added |
+🔔 Audit Review Due |
 🔔 Welcome {{ username }}
+
 </marquee>
+
 </div>
 
 <div class="welcome">
-<h2>Welcome back, {{ username }}!</h2>
-<p>Privileged Access Management Dashboard</p>
+
+<h2>Welcome {{ username }}</h2>
+
+<p>
+Privileged Access Management Dashboard
+</p>
+
 </div>
 
 <div class="stats">
 
 <div class="stat-card blue">
-<h2>12</h2>
+<h2>25</h2>
 <p>Managed Servers</p>
 </div>
 
 <div class="stat-card green">
-<h2>8</h2>
-<p>Active Sessions</p>
+<h2>148</h2>
+<p>Vault Accounts</p>
 </div>
 
 <div class="stat-card orange">
-<h2>3</h2>
+<h2>12</h2>
 <p>Pending Requests</p>
 </div>
 
 <div class="stat-card red">
-<h2>1</h2>
-<p>Security Alerts</p>
+<h2>7</h2>
+<p>Active Sessions</p>
 </div>
 
 </div>
 
 <div class="grid">
 
-<a href="/vault" class="card card-vault">
-<div class="icon icon-vault">🔑</div>
-<div>
+<a href="/vault" class="card">
+<div class="icon">🔐</div>
+<div class="card-text">
 <h3>Password Vault</h3>
-<p>Manage credentials</p>
+<p>Manage privileged credentials</p>
 </div>
 </a>
 
-<a href="/requests" class="card card-requests">
-<div class="icon icon-requests">✅</div>
-<div>
+<a href="/requests" class="card">
+<div class="icon">📋</div>
+<div class="card-text">
 <h3>Access Requests</h3>
-<p>Review requests</p>
+<p>Approval workflow</p>
 </div>
 </a>
 
-<a href="/audit" class="card card-audit">
-<div class="icon icon-audit">📊</div>
-<div>
+<a href="/audit" class="card">
+<div class="icon">📊</div>
+<div class="card-text">
 <h3>Audit Logs</h3>
-<p>Review activities</p>
+<p>Review system activity</p>
 </div>
 </a>
 
-{% if username == "admin" %}
-<a href="/users" class="card card-users">
-<div class="icon icon-users">👥</div>
-<div>
+<a href="/users" class="card">
+<div class="icon">👥</div>
+<div class="card-text">
 <h3>User Management</h3>
-<p>Manage users</p>
+<p>Manage PAM users</p>
 </div>
 </a>
-{% else %}
-<a href="/profile" class="card card-profile">
-<div class="icon icon-profile">👤</div>
-<div>
-<h3>My Profile</h3>
-<p>View profile</p>
+
+<a href="/server_access" class="card">
+<div class="icon">🖥️</div>
+<div class="card-text">
+<h3>Server Access</h3>
+<p>Request and manage access</p>
 </div>
 </a>
-{% endif %}
+
+<a href="/jit_access" class="card">
+<div class="icon">⏳</div>
+<div class="card-text">
+<h3>One-Time Access</h3>
+<p>Just In Time Access</p>
+</div>
+</a>
+
+<a href="/least_privilege" class="card">
+<div class="icon">🛡️</div>
+<div class="card-text">
+<h3>Least Privilege</h3>
+<p>Role Based Policies</p>
+</div>
+</a>
+
+<a href="/evm" class="card">
+<div class="icon">💻</div>
+<div class="card-text">
+<h3>EVM</h3>
+<p>Endpoint Vault Manager</p>
+</div>
+</a>
+
+<a href="/sessions" class="card">
+<div class="icon">🎬</div>
+<div class="card-text">
+<h3>Sessions</h3>
+<p>Monitor privileged sessions</p>
+</div>
+</a>
+
+<a href="/reports" class="card">
+<div class="icon">📈</div>
+<div class="card-text">
+<h3>Reports</h3>
+<p>Compliance reports</p>
+</div>
+</a>
 
 </div>
 
 <div class="profile-box">
+
 <h3>👤 My Details</h3>
-<br>
-<p><b>User:</b> {{ username }}</p>
-<p><b>Role:</b> {% if username == "admin" %}Administrator{% else %}User{% endif %}</p>
-<p><b>Status:</b> Active</p>
-<p><b>Session:</b> Connected</p>
+
+<p><strong>User:</strong> {{ username }}</p>
+
+<p><strong>Role:</strong> {{ role }}</p>
+
+<p><strong>Status:</strong> Active</p>
+
+<p><strong>Session:</strong> Connected</p>
+
 </div>
 
-<div class="server-box">
+<div class="profile-box">
 
 <h3>🖥 Managed Servers</h3>
 
-<table class="server-table">
+<table>
 
 <tr>
 <th>Server</th>
 <th>IP Address</th>
+<th>Platform</th>
 <th>Status</th>
-<th>Protocol</th>
 </tr>
 
 <tr>
 <td>Windows-Prod-01</td>
 <td>10.0.1.10</td>
+<td>Windows</td>
 <td class="online">Online</td>
-<td>RDP</td>
 </tr>
 
 <tr>
 <td>Linux-App-01</td>
 <td>10.0.1.20</td>
+<td>Linux</td>
 <td class="online">Online</td>
-<td>SSH</td>
 </tr>
 
 <tr>
 <td>Database-01</td>
 <td>10.0.1.30</td>
+<td>Linux</td>
 <td class="offline">Offline</td>
-<td>SSH</td>
 </tr>
 
 <tr>
 <td>DomainController</td>
 <td>10.0.1.5</td>
+<td>Windows</td>
 <td class="online">Online</td>
-<td>RDP</td>
 </tr>
 
 </table>
@@ -362,7 +392,9 @@ body{
 </div>
 
 <div class="footer">
-PAM-LITE • Session Active • Auto Logout After 15 Minutes
+
+PAM-LITE Enterprise Edition • Session Active • Auto Logout After 15 Minutes
+
 </div>
 
 </div>
