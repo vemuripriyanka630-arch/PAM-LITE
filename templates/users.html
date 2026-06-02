@@ -92,7 +92,7 @@
                 <button type="submit" class="btn btn-sm btn-primary">Change</button>
               </form>
               <form method="POST" action="/users/{{ user['username'] }}/delete"
-                    onsubmit="return confirm('Delete user {{ user[\'username\'] }}?')">
+                    onsubmit="return confirm('Delete user {{ user.username }}?')"
                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
               </form>
             </div>
