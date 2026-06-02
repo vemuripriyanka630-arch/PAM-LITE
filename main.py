@@ -67,6 +67,44 @@ def init_db():
                 resource TEXT NOT NULL,
                 status   TEXT NOT NULL DEFAULT 'success'
             );
+            CREATE TABLE IF NOT EXISTS servers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                server_name TEXT,
+                ip_address TEXT,
+                platform TEXT,
+                status TEXT
+            );
+           CREATE TABLE IF NOT EXISTS jit_access (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                server_name TEXT,
+                duration TEXT,
+                reason TEXT,
+                status TEXT,
+                created TEXT
+           );
+           CREATE TABLE IF NOT EXISTS policies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                role TEXT,
+                ssh_access TEXT,
+                rdp_access TEXT,
+                vault_access TEXT
+           );
+           CREATE TABLE IF NOT EXISTS sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                server_name TEXT,
+                protocol TEXT,
+                start_time TEXT,
+                status TEXT
+           );
+           CREATE TABLE IF NOT EXISTS password_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                vault_name TEXT,
+                changed_by TEXT,
+                changed_date TEXT
+           );
         """)
         # Migrate existing DBs that don't have the role column yet
         try:
@@ -103,7 +141,16 @@ def init_db():
                 ("dave",  "GitHub Org",       "Add deploy key",    "pending",  "2026-06-01 17:30"),
             ])
 
-
+        if not conn.execute("SELECT 1 FROM servers").fetchone():
+            conn.executemany(
+                "INSERT INTO servers (server_name, ip_address, platform, status) VALUES (?,?,?,?)",
+                [
+                ("Windows-Prod-01","10.0.1.10","Windows","Online"),
+                ("Linux-App-01","10.0.1.20","Linux","Online"),
+                ("Database-01","10.0.1.30","Linux","Offline"),
+                ("DomainController","10.0.1.5","Windows","Online")
+                ]
+                )
 init_db()
 
 
@@ -369,7 +416,105 @@ def change_password():
     return render_template("profile.html", username=uname,
                            role=session.get("role", "user"),
                            message="Password updated successfully.")
+@app.route("/server_access")
+def server_access():
+    if "user" not in session:
+        return redirect(url_for("login"))
 
+    with get_db() as conn:
+        servers = conn.execute(
+            "SELECT * FROM servers"
+        ).fetchall()
+
+    return render_template(
+        "server_access.html",
+        username=session["user"],
+        servers=servers
+    )
+
+
+@app.route("/jit_access")
+def jit_access():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "jit_access.html",
+        username=session["user"]
+    )
+
+
+@app.route("/least_privilege")
+def least_privilege():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    with get_db() as conn:
+        policies = conn.execute(
+            "SELECT * FROM policies"
+        ).fetchall()
+
+    return render_template(
+        "least_privilege.html",
+        username=session["user"],
+        policies=policies
+    )
+
+
+@app.route("/evm")
+def evm():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "evm.html",
+        username=session["user"]
+    )
+
+
+@app.route("/sessions")
+def sessions_page():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    with get_db() as conn:
+        sessions_list = conn.execute(
+            "SELECT * FROM sessions"
+        ).fetchall()
+
+    return render_template(
+        "sessions.html",
+        username=session["user"],
+        sessions=sessions_list
+    )
+
+
+@app.route("/reports")
+def reports():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "reports.html",
+        username=session["user"]
+    )
+
+
+@app.route("/breakglass")
+def breakglass():
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "breakglass.html",
+        username=session["user"]
+    )
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
