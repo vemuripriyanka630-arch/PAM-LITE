@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PAM Lite - Access Requests</title>
+</head>
+<body>
+<h1>Access Requests</h1>
+<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+
+<h2>Submit New Request</h2>
+<form method="POST" action="/requests/new">
+  Resource: <input type="text" name="resource" placeholder="e.g. Production DB" required>
+  &nbsp;
+  Reason: <input type="text" name="reason" placeholder="e.g. Debug outage" required>
+  &nbsp;
+  <button type="submit">Submit</button>
+</form>
+
+<br>
+<h2>All Requests</h2>
+<table border="1" cellpadding="8">
+<tr>
+  <th>#</th>
+  <th>User</th>
+  <th>Resource</th>
+  <th>Reason</th>
+  <th>Status</th>
+  <th>Action</th>
+</tr>
+{% for req in requests %}
+<tr>
+  <td>{{ req.id }}</td>
+  <td>{{ req.user }}</td>
+  <td>{{ req.resource }}</td>
+  <td>{{ req.reason }}</td>
+  <td>{{ req.status }}</td>
+  <td>
+    {% if req.status == "pending" %}
+      <form method="POST" action="/requests/{{ req.id }}/approve" style="display:inline">
+        <button type="submit">Approve</button>
+      </form>
+      <form method="POST" action="/requests/{{ req.id }}/deny" style="display:inline">
+        <button type="submit">Deny</button>
+      </form>
+    {% else %}
+      —
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>

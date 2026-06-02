@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PAM Lite - Profile</title>
+</head>
+<body>
+<h1>My Profile</h1>
+<p>Logged in as {{ username }}. <a href="/dashboard">Back</a> | <a href="/logout">Logout</a></p>
+
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+{% if message %}
+<p style="color:green">{{ message }}</p>
+{% endif %}
+
+<h2>Change Password</h2>
+<form method="POST" action="/profile/password">
+  Current password: <input type="password" name="current_password" required><br><br>
+  New password: <input type="password" name="new_password" required><br><br>
+  Confirm new password: <input type="password" name="confirm_password" required><br><br>
+  <button type="submit">Update Password</button>
+</form>
+</body>
+</html>
